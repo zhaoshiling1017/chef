@@ -44,19 +44,19 @@ class Chef
           status = popen4("zypper --non-interactive info #{@new_resource.package_name}") do |pid, stdin, stdout, stderr|
             stdout.each do |line|
               case line
-              when /^Version: (.+)$/
-                version = $1
+              when /^Version *: (.+) *$/
+                version = $1.strip
                 Chef::Log.debug("#{@new_resource} version #{$1}")
-              when /^Installed: Yes$/
+              when /^Installed *: Yes *$/
                 is_installed=true
                 Chef::Log.debug("#{@new_resource} is installed")
 
-              when /^Installed: No$/
+              when /^Installed *: No *$/
                 is_installed=false
                 Chef::Log.debug("#{@new_resource} is not installed")
-              when /^Status: out-of-date \(version (.+) installed\)$/
+              when /^Status *: out-of-date \(version (.+) installed\) *$/
                 is_out_of_date=true
-                oud_version=$1
+                oud_version=$1.strip
                 Chef::Log.debug("#{@new_resource} out of date version #{$1}")
               end
             end
