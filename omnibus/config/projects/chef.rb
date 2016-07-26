@@ -56,6 +56,13 @@ dependency "preparation"
 # or removal of a dependency doesn't dirty the entire project file
 dependency "chef-complete"
 
+# Copy all the chef and chef-config gems to the package directory
+%w(chef chef-config).each do |gem_name|
+  Dir.glob("#{Config.source_dir}/#{gem_name}/*.gem").each do |gem|
+    copy_file(file, "#{Config.package_dir}/#{File.basename(file)}")
+  end
+end
+
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
 end
