@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/chef/license_scout.git
-  revision: 3f33a3cb48cf4a796b2017a8fb25cf1cb22bf3ab
+  revision: bde4f04e257f8ff568ac29e3ddd0e0b6cd468af4
+  branch: sersut/robust-bundler
   specs:
     license_scout (0.1.0)
       ffi-yajl (~> 2.2)
