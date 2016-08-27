@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus-software.git
-  revision: 676b89e48a213f34567f847c1c2aa20f08d5a2b7
-  branch: sersut/ff-ksubrama/ruby23
+  revision: 1f78a03fb7bf1ef6ecf456f5fa4d1442d1fbe611
+  branch: nano
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
