@@ -284,6 +284,16 @@ describe "Chef::Resource.property validation" do
       [ nil, "thing" ],
       [ :nope, false ],
       :nillable
+
+    validation_test "Boolean",
+      [ true, false ],
+      [ 1, "true" ],
+      :nil_is_valid
+
+    validation_test "ArrayProperty",
+      [ 1, [], [1,2,3] ],
+      [ ],
+      :nil_is_valid
   end
 
   # is

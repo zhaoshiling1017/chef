@@ -301,6 +301,14 @@ class Chef
         raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
         property.reset(self)
       end
+
+      # Same as property_type above, just used to declare types inline here.
+      def self.property_type(**options)
+        Property.derive(**options)
+      end
+      Boolean = property_type is: [ true, false ], coerce: proc { |v| !!v }
+      require "chef/property/array_property"
+      ArrayProperty = Chef::Property::ArrayProperty
     end
   end
 end

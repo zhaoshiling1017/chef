@@ -1224,4 +1224,37 @@ describe "Chef::Resource.property" do
       end
     end
   end
+
+  # ArrayProperty tests
+  with_property ":x, ArrayProperty" do
+    it "x 1 sets x to [1]" do
+      expect(resource.x 1).to eq [1]
+      expect(resource.x).to eq [1]
+    end
+    it "x 1, 2, 3 sets x to [1,2,3]" do
+      expect(resource.x 1, 2, 3).to eq [1,2,3]
+      expect(resource.x).to eq [1,2,3]
+    end
+    it "x [1] sets x to [1]" do
+      expect(resource.x [1]).to eq [1]
+      expect(resource.x).to eq [1]
+    end
+    it "x [] sets x to []" do
+      expect(resource.x []).to eq []
+      expect(resource.x).to eq []
+    end
+
+    it "x [[1]] sets x to [[1]]" do
+      expect(resource.x [[1]]).to eq [[1]]
+      expect(resource.x).to eq [[1]]
+    end
+    it "x [[]] sets x to [[]]" do
+      expect(resource.x [[]]).to eq [[]]
+      expect(resource.x).to eq []
+    end
+    it "x [1], [2] sets x to [[1], [2]]" do
+      expect(resource.x [[1], [2]]).to eq [[1], [2]]
+      expect(resource.x).to eq [[1], [2]]
+    end
+  end
 end
