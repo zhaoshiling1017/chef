@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/chef/omnibus.git
-  revision: e78034d825fd7ff2361c1c99591a27f114634880
+  revision: 7981910c6c63b99922fcd87f60e00096bb9935cc
   branch: mw/COOL-566
   specs:
     omnibus (5.5.0)
