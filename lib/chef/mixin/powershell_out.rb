@@ -34,7 +34,14 @@ class Chef
         script = command_args.first
         options = command_args.last.is_a?(Hash) ? command_args.last : nil
 
-        run_command_with_os_architecture(script, options)
+        result = run_command_with_os_architecture(script, options)
+
+        if result.stderr.include? "A positional parameter cannot be found that accepts argument"
+          raise Mixlib::ShellOut::ShellCommandFailed, "Please use single escape for special characters in powershell_out. \n #{result.stderr}"
+        elsif result.stderr != ""
+          raise Mixlib::ShellOut::ShellCommandFailed, result.stderr
+        end
+        result
       end
 
       # Run a command under powershell with the same API as shell_out!
@@ -62,6 +69,13 @@ class Chef
         options ||= {}
         options = options.dup
         arch = options.delete(:architecture)
+        script_to_run = build_powershell_command(script)
+        puts "gonna run\n"
+        puts script_to_run
+
+        script_to_run = build_powershell_command2(script)
+        puts "not gonna run\n"
+        puts script_to_run
 
         with_os_architecture(nil, architecture: arch) do
           shell_out(
@@ -91,6 +105,27 @@ class Chef
           "-InputFormat None",
         ]
 
+        # without gsub user has to add double escape for double quotes in the recipe
+        "powershell.exe #{flags.join(' ')} -Command \"#{script.gsub('"', '\"')}\""
+      end
+
+      def build_powershell_command2(script)
+        flags = [
+          # Hides the copyright banner at startup.
+          "-NoLogo",
+          # Does not present an interactive prompt to the user.
+          "-NonInteractive",
+          # Does not load the Windows PowerShell profile.
+          "-NoProfile",
+          # always set the ExecutionPolicy flag
+          # see http://technet.microsoft.com/en-us/library/ee176961.aspx
+          "-ExecutionPolicy Unrestricted",
+          # Powershell will hang if STDIN is redirected
+          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
+          "-InputFormat None",
+        ]
+
+        # without gsub user has to add double escape for double quotes in the recipe
         "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
       end
     end
