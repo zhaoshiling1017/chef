@@ -72,10 +72,12 @@ class Chef
         script_to_run = build_powershell_command(script)
         puts "gonna run\n"
         puts script_to_run
+        puts script_to_run.encoding.name
 
         script_to_run = build_powershell_command2(script)
         puts "not gonna run\n"
         puts script_to_run
+        puts script_to_run.encoding.name
 
         with_os_architecture(nil, architecture: arch) do
           shell_out(
