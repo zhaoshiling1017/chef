@@ -61,7 +61,7 @@ To mention the team, use @chef/ohai
 
 ## Dev Tools
 
-ChefDK, Chef Zero, Knife, Chef Apply and Chef Shell.
+Chef Zero, Knife, Chef Apply and Chef Shell.
 To mention the team, use @chef/client-dev-tools
 
 ### Maintainers
