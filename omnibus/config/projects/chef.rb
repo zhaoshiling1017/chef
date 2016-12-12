@@ -70,7 +70,7 @@ compress :dmg
 msi_upgrade_code = "D607A85C-BDFA-4F08-83ED-2ECB4DCD6BC5"
 project_location_dir = name
 package :msi do
-  fast_msi true
+  fast_msi false
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
