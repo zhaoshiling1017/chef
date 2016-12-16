@@ -26,7 +26,7 @@ def flushcache():
         pass
     get_sack().load_system_repo(build_cache=True)
 
-def query(command):
+def get_pkgspec(command):
     sack = get_sack()
 
     subj = dnf.subject.Subject(command['provides'])
@@ -56,12 +56,39 @@ def query(command):
     pkgs = dnf.query.latest_limit_pkgs(q, 1)
 
     if not pkgs:
+        return None
+
+    # make sure we picked the package with the highest version
+    pkgs.sort
+    return pkgs.pop()
+
+def query(command):
+    pkg_spec = get_pkgspec(command)
+
+    if pkg_spec is None:
         sys.stdout.write('{} nil nil\n'.format(command['provides'].split().pop(0)))
     else:
-        # make sure we picked the package with the highest version
-        pkgs.sort
-        pkg = pkgs.pop()
-        sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg.name, pkg.epoch, pkg.version, pkg.release, pkg.arch))
+        sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg_spec.name, pkg_spec.epoch, pkg_spec.version, pkg_spec.release, pkg_spec.arch))
+
+def install(command):
+    command['action'] = "whatavailable"
+    pkg_spec = get_pkgspec(command)
+    if pkg_spec is None:
+        raise RuntimeError("no available package")
+
+    sys.stderr.write('FOO1')
+    base.package_install(pkg_spec)
+    sys.stderr.write('FOO2')
+
+    base.resolve()
+    sys.stderr.write('FOO3')
+
+    base.download_packages(base.transaction.install_set)
+    sys.stderr.write('FOO4')
+
+    base.do_transaction()
+    sys.stderr.write('FOO5')
+    sys.stdout.write('{} {}:{}-{} {}\n'.format(pkg_spec.name, pkg_spec.epoch, pkg_spec.version, pkg_spec.release, pkg_spec.arch))
 
 # the design of this helper is that it should try to be 'brittle' and fail hard and exit in order
 # to keep process tables clean.  additional error handling should probably be added to the retry loop
@@ -85,6 +112,8 @@ while 1:
         query(command)
     elif command['action'] == "whatavailable":
         query(command)
+    elif command['action'] == "install":
+        install(command)
     elif command['action'] == "flushcache":
         flushcache()
     else:

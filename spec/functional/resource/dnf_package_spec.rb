@@ -80,10 +80,10 @@ gpgcheck=0
         flush_cache
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be true
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
         dnf_package.run_action(:install)
         expect(dnf_package.updated_by_last_action?).to be false
-        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to eql("chef_rpm-1.10-1.fc24.x86_64")
+        expect(shell_out("rpm -q chef_rpm").stdout.chomp).to match(/chef_rpm-1.10-1.fc24.x86_64/)
       end
 
       it "does not install if the prior version package is installed" do

@@ -88,8 +88,10 @@ class Chef
           if new_resource.source
             dnf(new_resource.options, "-y install", new_resource.source)
           else
-            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            dnf(new_resource.options, "-y install", resolved_names)
+            names.each_with_index.each do |name, i|
+              next if name.nil?
+              python_helper.query(:install, available_version(i).to_s, nil, nil)
+            end
           end
           flushcache_after
         end
