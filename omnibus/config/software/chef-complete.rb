@@ -12,6 +12,11 @@ dependency "shebang-cleanup"
 dependency "version-manifest"
 dependency "openssl-customization"
 
+# If fips-enabled openssl is being installed
+if windows? || rhel?
+   dependency "stunnel"
+end
+
 if windows?
   # TODO can this be safely moved to before the chef?
   # It would make caching better ...
