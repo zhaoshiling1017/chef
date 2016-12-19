@@ -2,6 +2,7 @@ name "chef-complete"
 
 license :project_license
 skip_transitive_dependency_licensing true
+fips_enabled = (project.overrides[:fips] && project.overrides[:fips][:enabled]) || true
 
 dependency "chef"
 dependency "chef-appbundle"
@@ -12,8 +13,7 @@ dependency "shebang-cleanup"
 dependency "version-manifest"
 dependency "openssl-customization"
 
-# If fips-enabled openssl is being installed
-if windows? || rhel?
+if fips_enabled
    dependency "stunnel"
 end
 
