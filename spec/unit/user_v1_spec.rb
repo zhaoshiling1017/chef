@@ -18,12 +18,12 @@
 
 require "spec_helper"
 
-require "chef/user_v1"
+require "chef/user/v1"
 require "tempfile"
 
-describe Chef::UserV1 do
+describe Chef::User::V1 do
   before(:each) do
-    @user = Chef::UserV1.new
+    @user = Chef::User::V1.new
   end
 
   shared_examples_for "string fields with no contraints" do
@@ -62,8 +62,8 @@ describe Chef::UserV1 do
   end
 
   describe "initialize" do
-    it "should be a Chef::UserV1" do
-      expect(@user).to be_a_kind_of(Chef::UserV1)
+    it "should be a Chef::User::V1" do
+      expect(@user).to be_a_kind_of(Chef::User::V1)
     end
   end
 
@@ -262,11 +262,11 @@ describe Chef::UserV1 do
         "private_key" => "pandas",
         "create_key" => false,
       }
-      @user = Chef::UserV1.from_json(Chef::JSONCompat.to_json(user))
+      @user = Chef::User::V1.from_json(Chef::JSONCompat.to_json(user))
     end
 
-    it "should deserialize to a Chef::UserV1 object" do
-      expect(@user).to be_a_kind_of(Chef::UserV1)
+    it "should deserialize to a Chef::User::V1 object" do
+      expect(@user).to be_a_kind_of(Chef::User::V1)
     end
 
     it "preserves the username" do
@@ -315,9 +315,8 @@ describe Chef::UserV1 do
     let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
 
     before (:each) do
-      @user = Chef::UserV1.new
-      allow(@user).to receive(:chef_root_rest_v0).and_return(double("chef rest root v0 object"))
-      allow(@user).to receive(:chef_root_rest_v1).and_return(double("chef rest root v1 object"))
+      @user = Chef::User::V1.new
+      allow(@user).to receive(:chef_rest).and_return(double("chef rest root v1 object"))
     end
 
     describe "update" do
@@ -347,7 +346,7 @@ describe Chef::UserV1 do
       context "when server API V1 is valid on the Chef Server receiving the request" do
         context "when the user submits valid data" do
           it "properly updates the user" do
-            expect(@user.chef_root_rest_v1).to receive(:put).with("users/some_username", payload).and_return({})
+            expect(@user.chef_rest).to receive(:put).with("users/some_username", payload).and_return({})
             @user.update
           end
         end
@@ -369,7 +368,7 @@ describe Chef::UserV1 do
 
         before do
           @user.public_key "some_public_key"
-          allow(@user.chef_root_rest_v1).to receive(:put)
+          allow(@user.chef_rest).to receive(:put)
         end
 
         context "when the server returns a 400" do
@@ -381,7 +380,7 @@ describe Chef::UserV1 do
 
             before do
               allow(response_400).to receive(:body).and_return(response_body_400)
-              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_400)
+              allow(@user.chef_rest).to receive(:put).and_raise(exception_400)
             end
 
             it "proceeds with the V0 PUT since it can handle public / private key fields" do
@@ -401,7 +400,7 @@ describe Chef::UserV1 do
 
             before do
               allow(response_400).to receive(:body).and_return(response_body_400)
-              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_400)
+              allow(@user.chef_rest).to receive(:put).and_raise(exception_400)
             end
 
             it "will not proceed with the V0 PUT since the original bad request was not key related" do
@@ -422,13 +421,13 @@ describe Chef::UserV1 do
             let(:object)    { @user }
             let(:method)    { :update }
             let(:http_verb) { :put }
-            let(:rest_v1)   { @user.chef_root_rest_v1 }
+            let(:rest_v1)   { @user.chef_rest }
           end
 
           context "when the server supports API V0" do
             before do
               allow(@user).to receive(:server_client_api_version_intersection).and_return([0])
-              allow(@user.chef_root_rest_v1).to receive(:put).and_raise(exception_406)
+              allow(@user.chef_rest).to receive(:put).and_raise(exception_406)
             end
 
             it "properly updates the user" do
@@ -465,15 +464,14 @@ describe Chef::UserV1 do
       it_should_behave_like "user or client create" do
         let(:object)  { @user }
         let(:error)   { Chef::Exceptions::InvalidUserAttribute }
-        let(:rest_v0) { @user.chef_root_rest_v0 }
-        let(:rest_v1) { @user.chef_root_rest_v1 }
+        let(:rest_v1) { @user.chef_rest }
         let(:url)     { "users" }
       end
 
       context "when handling API V1" do
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
+          expect(@user.chef_rest).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is valid on the Chef Server receiving the request
@@ -484,14 +482,14 @@ describe Chef::UserV1 do
           let(:object)    { @user }
           let(:method)    { :create }
           let(:http_verb) { :post }
-          let(:rest_v1)   { @user.chef_root_rest_v1 }
+          let(:rest_v1)   { @user.chef_rest }
         end
       end
 
       context "when handling API V0" do
         before do
           allow(@user).to receive(:server_client_api_version_intersection).and_return([0])
-          allow(@user.chef_root_rest_v1).to receive(:post).and_raise(exception_406)
+          allow(@user.chef_rest).to receive(:post).and_raise(exception_406)
         end
 
         it "creates a new user via the API with a middle_name when it exists" do
@@ -536,7 +534,7 @@ describe Chef::UserV1 do
 
   describe "API Interactions" do
     before (:each) do
-      @user = Chef::UserV1.new
+      @user = Chef::User::V1.new
       @user.username "foobar"
       @http_client = double("Chef::ServerAPI mock")
       allow(Chef::ServerAPI).to receive(:new).and_return(@http_client)
@@ -547,27 +545,27 @@ describe Chef::UserV1 do
         Chef::Config[:chef_server_url] = "http://www.example.com"
         @osc_response = { "admin" => "http://www.example.com/users/admin" }
         @ohc_response = [ { "user" => { "username" => "admin" } } ]
-        allow(Chef::UserV1).to receive(:load).with("admin").and_return(@user)
+        allow(Chef::User::V1).to receive(:load).with("admin").and_return(@user)
         @osc_inflated_response = { "admin" => @user }
       end
 
       it "lists all clients on an OHC/OPC server" do
         allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
-        # We expect that Chef::UserV1.list will give a consistent response
+        # We expect that Chef::User::V1.list will give a consistent response
         # so OHC API responses should be transformed to OSC-style output.
-        expect(Chef::UserV1.list).to eq(@osc_response)
+        expect(Chef::User::V1.list).to eq(@osc_response)
       end
 
       it "inflate all clients on an OHC/OPC server" do
         allow(@http_client).to receive(:get).with("users").and_return(@ohc_response)
-        expect(Chef::UserV1.list(true)).to eq(@osc_inflated_response)
+        expect(Chef::User::V1.list(true)).to eq(@osc_inflated_response)
       end
     end
 
     describe "read" do
       it "loads a named user from the API" do
         expect(@http_client).to receive(:get).with("users/foobar").and_return({ "username" => "foobar", "admin" => true, "public_key" => "pubkey" })
-        user = Chef::UserV1.load("foobar")
+        user = Chef::User::V1.load("foobar")
         expect(user.username).to eq("foobar")
         expect(user.public_key).to eq("pubkey")
       end
