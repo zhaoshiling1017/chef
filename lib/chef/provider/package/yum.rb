@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software, Inc.
+# Copyright:: Copyright 2008-2017, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -358,6 +358,12 @@ class Chef
               "and release? (version-release, e.g. 1.84-10.fc6)"
           end
         end
+
+        def action_flush_cache
+          @yum.reload
+        end
+
+        private
 
         # Allow for foo.x86_64 style package_name like yum uses in it's output
         def parse_arch(package_name)
