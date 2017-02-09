@@ -13,12 +13,14 @@ class TopCookbooks < Chef::Resource
     end
 
     cookbook_kitchen "#{command} learn-the-basics-ubuntu" do
-      repository "learn-chef/learn-chef-acceptance"
+      repository "tduffield/learn-chef-acceptance"
+      branch "use-warn-specificially"
       cookbook_relative_dir "cookbooks/learn-the-basics-ubuntu"
     end
 
     cookbook_kitchen "#{command} learn-the-basics-windows" do
-      repository "learn-chef/learn-chef-acceptance"
+      repository "tduffield/learn-chef-acceptance"
+      branch "use-warn-specificially"
       cookbook_relative_dir "cookbooks/learn-the-basics-windows"
     end
 
