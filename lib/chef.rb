@@ -16,6 +16,16 @@
 # limitations under the License.
 #
 
+# XXX: work around logger spam from hashie
+# https://github.com/intridea/hashie/issues/394
+begin
+  require "hashie"
+  require "hashie/logger"
+  Hashie.logger = Logger.new(nil)
+rescue LoadError
+  # intentionally left blank
+end
+
 require "chef/version"
 require "chef/nil_argument"
 require "chef/mash"
