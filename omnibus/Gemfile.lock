@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: ced452379e27b85b9958421f258b5fbe22e3760a
+  revision: 433220e0b7c434dbc4a36daaa1fecbdb1bf7231d
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -25,7 +25,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: a8acfaabcee5506482d5c56beb74afc573c2c1f9
+  revision: 09a4149852249089d990e7ab53bce1b9e97f1bcb
+  branch: lcg/openssl-sitelibdir
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
