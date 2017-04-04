@@ -142,7 +142,9 @@ class Chef
       if whyrun_mode? && (!whyrun_supported? || requirements.action_blocked?(@action))
         events.resource_bypassed(@new_resource, @action, self)
       else
-        send("action_#{@action}")
+        compile_and_converge_action do
+          send("action_#{@action}")
+        end
       end
 
       set_updated_status
@@ -326,82 +328,26 @@ class Chef
       end
     end
 
-    # Enables inline evaluation of resources in provider actions.
-    #
-    # Without this option, any resources declared inside the Provider are added
-    # to the resource collection after the current position at the time the
-    # action is executed. Because they are added to the primary resource
-    # collection for the chef run, they can notify other resources outside
-    # the Provider, and potentially be notified by resources outside the Provider
-    # (but this is complicated by the fact that they don't exist until the
-    # provider executes). In this mode, it is impossible to correctly set the
-    # updated_by_last_action flag on the parent Provider resource, since it
-    # executes and returns before its component resources are run.
-    #
-    # With this option enabled, each action creates a temporary run_context
-    # with its own resource collection, evaluates the action's code in that
-    # context, and then converges the resources created. If any resources
-    # were updated, then this provider's new_resource will be marked updated.
-    #
-    # In this mode, resources created within the Provider cannot interact with
-    # external resources via notifies, though notifications to other
-    # resources within the Provider will work. Delayed notifications are executed
-    # at the conclusion of the provider's action, *not* at the end of the
-    # main chef run.
-    #
-    # This mode of evaluation is experimental, but is believed to be a better
-    # set of tradeoffs than the append-after mode, so it will likely become
-    # the default in a future major release of Chef.
-    #
     def self.use_inline_resources
-      extend InlineResources::ClassMethods
-      include InlineResources
+      # deprecate this
     end
 
-    # Chef::Provider::InlineResources
-    # Implementation of inline resource convergence for providers. See
-    # Provider.use_inline_resources for a longer explanation.
+    # Create a child run_context, compile the block, and converge it.
     #
-    # This code is restricted to a module so that it can be selectively
-    # applied to providers on an opt-in basis.
+    # NOTE: private, but can be overridden in a sublass by anyone named 'noah'
     #
     # @api private
-    module InlineResources
-
-      # Create a child run_context, compile the block, and converge it.
-      #
-      # @api private
-      def compile_and_converge_action(&block)
-        old_run_context = run_context
-        @run_context = run_context.create_child
-        return_value = instance_eval(&block)
-        Chef::Runner.new(run_context).converge
-        return_value
-      ensure
-        if run_context.resource_collection.any? { |r| r.updated? }
-          new_resource.updated_by_last_action(true)
-        end
-        @run_context = old_run_context
+    def compile_and_converge_action(&block)
+      old_run_context = run_context
+      @run_context = run_context.create_child
+      return_value = instance_eval(&block)
+      Chef::Runner.new(run_context).converge
+      return_value
+    ensure
+      if run_context.resource_collection.any? { |r| r.updated? }
+        new_resource.updated_by_last_action(true)
       end
-
-      # Class methods for InlineResources. Overrides the `action` DSL method
-      # with one that enables inline resource convergence.
-      #
-      # @api private
-      module ClassMethods
-        # Defines an action method on the provider, running the block to
-        # compile the resources, converging them, and then checking if any
-        # were updated (and updating new-resource if so)
-        def action(name, &block)
-          # We need the block directly in a method so that `super` works
-          define_method("compile_action_#{name}", &block)
-          class_eval <<-EOM
-            def action_#{name}
-              compile_and_converge_action { compile_action_#{name} }
-            end
-          EOM
-        end
-      end
+      @run_context = old_run_context
     end
 
     protected
