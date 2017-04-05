@@ -8,7 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 433220e0b7c434dbc4a36daaa1fecbdb1bf7231d
+  revision: 5da6460a7f6d971ad2993a4a29bddd8aa0a3c2b8
+  branch: adamleff/update-bff-packager
   specs:
     omnibus (5.5.0)
       aws-sdk (~> 2)
@@ -38,13 +39,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.1)
     awesome_print (1.7.0)
-    aws-sdk (2.9.1)
-      aws-sdk-resources (= 2.9.1)
-    aws-sdk-core (2.9.1)
+    aws-sdk (2.9.3)
+      aws-sdk-resources (= 2.9.3)
+    aws-sdk-core (2.9.3)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.9.1)
-      aws-sdk-core (= 2.9.1)
+    aws-sdk-resources (2.9.3)
+      aws-sdk-core (= 2.9.3)
     aws-sigv4 (1.0.0)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
