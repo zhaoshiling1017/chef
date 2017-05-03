@@ -2,6 +2,7 @@ source "https://rubygems.org"
 gemspec :name => "chef"
 
 gem "activesupport", "< 4.0.0", :group => :compat_testing, :platform => "ruby"
+gem "net-ssh", "~> 2.6"
 
 group(:docgen) do
   gem "yard"
