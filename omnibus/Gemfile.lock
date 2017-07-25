@@ -25,7 +25,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: a5184e2d973352d93923b4e979479e079b80364d
+  revision: c937750a4570e26e9a6650002c937beddb218068
+  branch: ssd/libiconv-update
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -38,13 +39,13 @@ GEM
       public_suffix (~> 2.0, >= 2.0.2)
     artifactory (2.8.2)
     awesome_print (1.8.0)
-    aws-sdk (2.10.15)
-      aws-sdk-resources (= 2.10.15)
-    aws-sdk-core (2.10.15)
+    aws-sdk (2.10.16)
+      aws-sdk-resources (= 2.10.16)
+    aws-sdk-core (2.10.16)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.15)
-      aws-sdk-core (= 2.10.15)
+    aws-sdk-resources (2.10.16)
+      aws-sdk-core (= 2.10.16)
     aws-sigv4 (1.0.1)
     berkshelf (4.3.5)
       addressable (~> 2.3, >= 2.3.4)
@@ -140,7 +141,7 @@ GEM
     mixlib-shellout (2.3.2-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
-    mixlib-versioning (1.1.0)
+    mixlib-versioning (1.2.1)
     molinillo (0.4.5)
     multi_json (1.12.1)
     multipart-post (2.0.0)
@@ -268,4 +269,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.15.1
+   1.15.2
