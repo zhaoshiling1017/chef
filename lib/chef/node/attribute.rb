@@ -604,9 +604,9 @@ class Chef
         # In all other cases, replace merge_onto with merge_with
         else
           if merge_with.kind_of?(Hash)
-            Chef::Node::VividMash.new(merge_with)
+            Chef::Node::ImmutableMash.new(merge_with)
           elsif merge_with.kind_of?(Array)
-            Chef::Node::AttrArray.new(merge_with)
+            Chef::Node::ImmutableArray.new(merge_with)
           else
             merge_with
           end
