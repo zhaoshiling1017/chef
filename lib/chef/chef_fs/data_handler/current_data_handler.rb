@@ -4,15 +4,15 @@ require "chef/node"
 class Chef
   module ChefFS
     module DataHandler
-      class NodeDataHandler < DataHandlerBase
+      class CurrentDataHandler < DataHandlerBase
         def normalize(node, entry)
           result = normalize_hash(node, {
             "name" => remove_dot_json(entry.name),
-            "json_class" => "Chef::Node",
-            "chef_type" => "node",
-            "chef_environment" => "_default",
-            "normal" => {},
-            "run_list" => [],
+            #"json_class" => "Chef::Node",
+            #"chef_type" => "node",
+            "override" => {},
+            "default" => {},
+            "automatic" => {},
           })
           result["run_list"] = normalize_run_list(result["run_list"])
           result

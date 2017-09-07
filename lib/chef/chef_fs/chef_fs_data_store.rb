@@ -720,6 +720,9 @@ class Chef
           # /acls/containers|nodes|... do NOT drop into the next elsif, and do
           # not get .json appended
 
+        # /nodes/current/x.json
+        elsif path[1] == "current"
+          path[-1] = "#{path[-1]}.json"
         # /nodes|clients|.../x.json
         elsif path.length == 2
           path[-1] = "#{path[-1]}.json"

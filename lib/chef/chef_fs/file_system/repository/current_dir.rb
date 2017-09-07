@@ -17,22 +17,17 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/node"
-require "chef/chef_fs/file_system/repository/current_dir"
+require "chef/chef_fs/file_system/repository/current"
 require "chef/chef_fs/file_system/repository/directory"
 
 class Chef
   module ChefFS
     module FileSystem
       module Repository
-        class NodesDir < Repository::Directory
+        class CurrentDir < Repository::Directory
 
           def make_child_entry(child_name)
-            if child_name == "current"
-              CurrentDir.new(child_name, self)
-            else
-              Node.new(child_name, self)
-            end
+            Current.new(child_name, self)
           end
         end
       end
