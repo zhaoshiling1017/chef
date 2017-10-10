@@ -15,7 +15,7 @@
 #
 
 name "openssl-fips"
-default_version "2.0.10"
+default_version "2.0.16"
 
 license "OpenSSL"
 license_file "https://www.openssl.org/source/license.html"
