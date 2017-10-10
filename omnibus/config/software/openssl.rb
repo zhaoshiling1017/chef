@@ -76,7 +76,7 @@ build do
   ]
 
   # configure_args += ["--with-fipsdir=#{install_dir}/embedded", "fips"] if fips_mode?
-  configure_args += ["--with-fipslibdir=#{install_dir}/embedded", "lib"] if fips_mode?
+  configure_args += ["--with-fipslibdir=#{install_dir}/embedded/lib", "fips"] if fips_mode?
   
   if windows?
     configure_args << "zlib-dynamic"
