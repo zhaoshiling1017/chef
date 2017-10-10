@@ -1,4 +1,3 @@
-
 #
 # Copyright 2012-2016 Chef Software, Inc.
 #
@@ -75,9 +74,8 @@ build do
     "shared",
   ]
 
-  # configure_args += ["--with-fipsdir=#{install_dir}/embedded", "fips"] if fips_mode?
-  configure_args += ["--with-fipslibdir=#{install_dir}/embedded/lib", "fips"] if fips_mode?
-  
+  configure_args += ["--with-fipsdir=#{install_dir}/embedded/fips", "fips"] if fips_mode?
+
   if windows?
     configure_args << "zlib-dynamic"
   else
