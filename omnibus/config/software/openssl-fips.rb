@@ -23,7 +23,7 @@ skip_transitive_dependency_licensing true
 
 if windows?
   version("2.0.16") { source sha256: "42a660930d1e8b079b9618e5d44787b37e628742f9b7dbe53d986bffc84f8b5e", 
-                             url: "http://shain-bucket.s3.amazonaws.com/fips-2.0-windows.tar.gz" }
+                             url: "http://shain-bucket.s3.amazonaws.com/fips-2.0-windows.zip" }
 else
   version("2.0.16") { source sha256: "42a660930d1e8b079b9618e5d44787b37e628742f9b7dbe53d986bffc84f8b5e", 
                              url: "http://shain-bucket.s3.amazonaws.com/fips-2.0-linux.tar.gz" }
