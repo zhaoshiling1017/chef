@@ -12,10 +12,12 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" lib/chef/ve
 # There is a bug (https://github.com/bundler/bundler/issues/5644) that is preventing
 # us from updating the chef-dk gem via `bundle update` or `bundle lock --update`.
 # Until that is addressed, let's replace the version using sed.
+bundle config --delete frozen
 sed -i -r "s/chef\s\([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\)$/chef \($(cat VERSION)\)/" Gemfile.lock
 sed -i -r "s/chef\s\([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\-(.+)\)$/chef \($(cat VERSION)-\1\)/" Gemfile.lock
 sed -i -r "s/chef-config\s\([[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\)$/chef-config \($(cat VERSION)\)/" Gemfile.lock
 sed -i -r "s/chef-config\s\(= [[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+\)$/chef-config \(= $(cat VERSION)\)/" Gemfile.lock
+bundle config --local frozen 1
 
 # Once Expeditor finshes executing this script, it will commit the changes and push
 # the commit as a new tag corresponding to the value in the VERSION file.
