@@ -24,6 +24,13 @@ class Chef
   class Node
 
     module Immutablize
+      # For elements like Fixnums, true, nil...
+      def safe_dup(e)
+        e.dup
+      rescue TypeError
+        e
+      end
+
       def convert_value(value, path = nil)
         case value
         when Hash
@@ -31,7 +38,7 @@ class Chef
         when Array
           ImmutableArray.new([], __root__, __node__, __precedence__, path)
         else
-          value
+          safe_dup(value).freeze
         end
       end
     end
@@ -105,19 +112,16 @@ class Chef
       end
 
       def to_a
-        a = Array.new
-        each do |v|
-          a <<
-            case v
-            when ImmutableArray
-              v.to_a
-            when ImmutableMash
-              v.to_hash
-            else
-              v
-            end
-        end
-        a
+        Array.new(map do |v|
+          case v
+          when ImmutableArray
+            v.to_a
+          when ImmutableMash
+            v.to_h
+          else
+            safe_dup(v)
+          end
+        end)
       end
 
       alias_method :to_array, :to_a
@@ -272,7 +276,11 @@ class Chef
       # Of course, 'default' has a specific meaning in Chef-land
 
       def dup
-        Mash.new(self)
+        h = Mash.new
+        each_pair do |k, v|
+          h[k] = safe_dup(v)
+        end
+        h
       end
 
       def to_h
@@ -281,15 +289,17 @@ class Chef
           h[k] =
             case v
             when ImmutableMash
-              v.to_hash
+              v.to_h
             when ImmutableArray
               v.to_a
             else
-              v
+              safe_dup(v)
             end
         end
         h
       end
+
+      alias_method :to_hash, :to_h
 
       def [](key)
         ensure_generated_cache!
