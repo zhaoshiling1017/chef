@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -258,6 +258,16 @@ class Chef
       end
     end
 
+    class CookbookInstallVendor < Base
+      def id
+        20
+      end
+
+      def target
+        "cookbook_install_vendor.html"
+      end
+    end
+
     class DeployResource < Base
       def id
         21
@@ -275,16 +285,6 @@ class Chef
 
       def target
         "erl_resource.html"
-      end
-    end
-
-    class CookbookInstallVendor < Base
-      def id
-        20
-      end
-
-      def target
-        "cookbook_install_vendor.html"
       end
     end
 
