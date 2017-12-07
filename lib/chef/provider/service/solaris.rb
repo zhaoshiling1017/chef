@@ -54,6 +54,7 @@ class Chef
         end
 
         def enable_service
+	  service_status
           shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
           enable_flags = [ "-s", @new_resource.options ].flatten.compact
           shell_out!(default_init_command, "enable", *enable_flags, @new_resource.service_name)
@@ -92,6 +93,9 @@ class Chef
           # contract_id  1115271
           # dependency   require_all/error svc:/milestone/multi-user:default (online)
           # $
+
+	  # Set the default value for maintenance
+	  @maintenance = false
 
           # load output into hash
           status = {}
