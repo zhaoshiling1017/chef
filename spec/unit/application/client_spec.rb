@@ -235,8 +235,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         allow(ChefConfig).to receive(:windows?).and_return(true)
       end
 
-      it "should not terminate" do
-        expect(Chef::Application).not_to receive(:fatal!)
+      it "should terminate" do
+        expect(Chef::Application).to receive(:fatal!)
         app.reconfigure
       end
     end
