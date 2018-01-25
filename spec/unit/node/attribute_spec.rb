@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1270,6 +1270,32 @@ describe Chef::Node::Attribute do
       expect(events).to receive(:attribute_changed).with(:default, %w{foo bar}, {})
       expect(events).to receive(:attribute_changed).with(:default, %w{foo bar baz}, "quux")
       @attributes.default["foo"]["bar"]["baz"] = "quux"
+    end
+  end
+
+  describe "frozen immutable strings" do
+    it "strings in hashes should be frozen" do
+      @attributes.default["foo"]["bar"]["baz"] = "fizz"
+      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+
+    it "strings in arrays should be frozen" do
+      @attributes.default["foo"]["bar"] = [ "fizz" ]
+      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+    end
+  end
+
+  describe "assigning lazy ungenerated caches to other attributes" do
+    it "works with arrays" do
+      @attributes.default["foo"]["baz"] = %w{one two}
+      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
+      expect(@attributes.default["bar"]["baz"]).to eql(%w{one two})
+    end
+
+    it "works with hashes" do
+      @attributes.default["foo"]["baz"] = { "one" => "two" }
+      @attributes.default["bar"]["baz"] = @attributes["foo"]["baz"]
+      expect(@attributes.default["bar"]["baz"]).to eql({ "one" => "two" })
     end
   end
 end
