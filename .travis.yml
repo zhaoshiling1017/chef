@@ -144,7 +144,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - AMAZON=LATEST
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -161,7 +161,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=14.04
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -178,7 +178,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - UBUNTU=16.04
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -195,7 +195,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=7
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -212,7 +212,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=8
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -229,7 +229,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - DEBIAN=9
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -246,7 +246,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=6
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -263,7 +263,7 @@ matrix:
       - cat .kitchen/logs/kitchen.log
     env:
       - CENTOS=7
-      - KITCHEN_YAML=.kitchen.travis.yml
+      - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -280,7 +280,7 @@ matrix:
      - cat .kitchen/logs/kitchen.log
     env:
      - FEDORA=latest
-     - KITCHEN_YAML=.kitchen.travis.yml
+     - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.4.3
     services: docker
     sudo: required
@@ -297,42 +297,7 @@ matrix:
      - cat .kitchen/logs/kitchen.log
     env:
      - OPENSUSELEAP=42
-     - KITCHEN_YAML=.kitchen.travis.yml
-#  - rvm: 2.4.3
-#    services: docker
-#    sudo: required
-#    gemfile: kitchen-tests/Gemfile
-#    before_install:
-#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-#    before_script:
-#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-#      - cd kitchen-tests
-#    script:
-#      - bundle exec kitchen test awesome-customers-ubuntu-ubuntu-1404
-#    after_failure:
-#      - cat .kitchen/logs/kitchen.log
-#    env:
-#      - AWESOME_CUSTOMERS_UBUNTU=1
-#      - KITCHEN_YAML=.kitchen.travis.yml
-#  - rvm: 2.4.3
-#    services: docker
-#    sudo: required
-#    gemfile: kitchen-tests/Gemfile
-#    before_install:
-#      - gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-#      - gem install bundler -v $(grep bundler omnibus_overrides.rb | cut -d'"' -f2)
-#    before_script:
-#      - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-#      - cd kitchen-tests
-#    script:
-#      - bundle exec kitchen test awesome-customers-rhel-centos-7
-#    after_failure:
-#      - cat .kitchen/logs/kitchen.log
-#    env:
-#      - AWESOME_CUSTOMERS_RHEL=1
-#      - KITCHEN_YAML=.kitchen.travis.yml
-#    ### END TEST KITCHEN ONLY ###
+     - KITCHEN_YAML=.kitchen.dokken.yml
   - rvm: 2.5.0
     sudo: required
     before_install:

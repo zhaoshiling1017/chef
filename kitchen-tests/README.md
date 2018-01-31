@@ -80,10 +80,10 @@ The branch you choose must be accessible on GitHub. You cannot use a local commi
 ### Testing pull requests
 These end-to-end tests are also configured to run with Travis on EC2 instances when you submit a pull request
 to `opscode/chef`. Kitchen is configured to pull chef client source code from the branch it is testing. There
-is no need to modify `.kitchen.travis.yml` unless you are contributing tests.
+is no need to modify `.kitchen.dokken.yml` unless you are contributing tests.
 
 ## Contributing
 We would love to fill out our end-to-end testing coverage! If you have cookbooks and tests that you would
 like to see become a part of client testing, we encourage you to submit a pull request with your additions.
-We request that you do not add platforms to `.kitchen.travis.yml`. Please file a request to add a
+We request that you do not add platforms to `.kitchen.dokken.yml`. Please file a request to add a
 platform under [Issues](https://github.com/opscode/chef/issues).
