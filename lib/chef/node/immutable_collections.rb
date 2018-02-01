@@ -97,7 +97,7 @@ class Chef
       end
 
       def initialize(array_data = [])
-        # Immutable collections no longer have initialized state
+        ensure_generated_cache!
       end
 
       # For elements like Fixnums, true, nil...
@@ -132,9 +132,9 @@ class Chef
       end
 
       def reset
-        @generated_cache = false
         @short_circuit_attr_level = nil
-        internal_clear # redundant?
+        generate_cache
+        @generated_cache = true
       end
 
       # @api private
@@ -247,7 +247,7 @@ class Chef
       end
 
       def initialize(mash_data = {})
-        # Immutable collections no longer have initialized state
+        ensure_generated_cache!
       end
 
       alias :attribute? :has_key?
@@ -320,9 +320,8 @@ class Chef
       alias_method :to_hash, :to_h
 
       def reset
-        @generated_cache = false
         @short_circuit_attr_level = nil
-        internal_clear # redundant?
+        generate_cache
       end
 
       # @api private
