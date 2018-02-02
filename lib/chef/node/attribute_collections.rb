@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -178,8 +178,8 @@ class Chef
 
       def []=(key, value)
         ret = super
-        send_reset_cache(__path__)
-        ret
+        send_reset_cache(__path__ + [ key ])
+        ret # rubocop:disable Lint/Void
       end
 
       alias :attribute? :has_key?
