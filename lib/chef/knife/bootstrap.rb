@@ -30,6 +30,7 @@ class Chef
 
       attr_accessor :client_builder
       attr_accessor :chef_vault_handler
+      attr_reader :rendered_template_local
 
       deps do
         require "chef/knife/core/bootstrap_context"
@@ -38,6 +39,7 @@ class Chef
         require "highline"
         require "net/ssh"
         require "net/ssh/multi"
+        require "net/scp"
         require "chef/knife/ssh"
         Chef::Knife::Ssh.load_deps
       end
@@ -362,11 +364,20 @@ class Chef
         @config[:first_boot_attributes] || @config[:first_boot_attributes_from_file] || {}
       end
 
+      # Render bootstrap template
+      #
+      # @return [Object] Tempfile object
       def render_template
         @config[:first_boot_attributes] = first_boot_attributes
         template_file = find_template
         template = IO.read(template_file).chomp
-        Erubis::Eruby.new(template).evaluate(bootstrap_context)
+        @rendered_template_local ||= Tempfile.new('bootstrap')
+        begin
+          @rendered_template_local.write(Erubis::Eruby.new(template).evaluate(bootstrap_context))
+          File.chmod(0700, rendered_template_local)
+        ensure
+          @rendered_template_local.close
+        end
       end
 
       def run
@@ -403,6 +414,11 @@ class Chef
         ui.info("Connecting to #{ui.color(server_name, :bold)}")
 
         begin
+          render_template
+          # Knife:SSH doesn't establish a connection
+          Net::SCP.start(server_name, (user_name || config[:ssh_user])) do |scp|
+            scp.upload!(@rendered_template_local.path, rendered_template_remote_path)
+          end
           knife_ssh.run
         rescue Net::SSH::AuthenticationFailed
           if config[:ssh_password]
@@ -411,6 +427,11 @@ class Chef
             ui.info("Failed to authenticate #{knife_ssh.config[:ssh_user]} - trying password auth")
             knife_ssh_with_password_auth.run
           end
+        rescue Net::SSH::ConnectionTimeout, Net::SSH::Disconnect, SystemExit, Interrupt
+          ui.fatal("Connection to host lost. The bootstrap script #{rendered_template_remote_path} may have been orphaned on the host and should be removed.")
+          raise
+        ensure
+          @rendered_template_local.delete
         end
       end
 
@@ -439,6 +460,7 @@ class Chef
         ssh = Chef::Knife::Ssh.new
         ssh.ui = ui
         ssh.name_args = [ server_name, ssh_command ]
+
         ssh.config[:ssh_user] = user_name || config[:ssh_user]
         ssh.config[:ssh_password] = config[:ssh_password]
         ssh.config[:ssh_port] = config[:ssh_port]
@@ -452,6 +474,14 @@ class Chef
         ssh
       end
 
+      # Remote file location for rendered template.
+      #
+      # @since 14.0
+      # @return path [String]
+      def rendered_template_remote_path
+        @rendered_template_remote_path ||= '/tmp/bootstrap.sh' # TODO: Don't hard-code this path.
+      end
+
       def knife_ssh_with_password_auth
         ssh = knife_ssh
         ssh.config[:ssh_identity_file] = nil
@@ -460,7 +490,7 @@ class Chef
       end
 
       def ssh_command
-        command = render_template
+        command = "#{rendered_template_remote_path} ; rm -f #{rendered_template_remote_path}"
 
         if config[:use_sudo]
           sudo_prefix = config[:use_sudo_password] ? "echo '#{config[:ssh_password]}' | sudo -S " : "sudo "
