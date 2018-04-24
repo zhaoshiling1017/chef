@@ -52,6 +52,8 @@ dependency "preparation"
 # FIXME: must remove this ASAP.
 dependency "unf_ext"
 
+dependency "train"
+
 dependency "chef"
 
 #
