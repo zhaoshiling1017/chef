@@ -68,6 +68,8 @@ cd %CHEFDIR%
 
 cd
 
+call bundle install
+
 type Gemfile.lock
 
 IF NOT EXIST "Gemfile.lock" (
