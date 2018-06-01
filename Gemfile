@@ -18,7 +18,8 @@ group(:omnibus_package) do
 
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec", "~> 2"
+  gem "inspec", "<= 2.1.67"
+  gem "train", "<= 1.4.4"
   gem "chef-vault"
 end
 
