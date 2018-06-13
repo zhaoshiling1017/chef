@@ -132,6 +132,8 @@ GEM
     ffi (1.9.25)
     ffi (1.9.25-x64-mingw32)
     ffi (1.9.25-x86-mingw32)
+    ffi-libarchive (0.4.1)
+      ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
     ffi-yajl (2.3.1)
@@ -359,6 +361,7 @@ DEPENDENCIES
   chef-vault
   cheffish (~> 14)
   chefstyle!
+  ffi-libarchive (>= 0.4.1)
   inspec-core (~> 2)
   netrc
   octokit

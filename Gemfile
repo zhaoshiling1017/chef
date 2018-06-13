@@ -12,9 +12,10 @@ gem "cheffish", "~> 14"
 
 group(:omnibus_package) do
   gem "appbundler"
-  gem "rb-readline"
-  gem "inspec-core", "~> 2"
   gem "chef-vault"
+  gem "ffi-libarchive", ">= 0.4.1"
+  gem "inspec-core", "~> 2"
+  gem "rb-readline"
 end
 
 group(:omnibus_package, :pry) do
