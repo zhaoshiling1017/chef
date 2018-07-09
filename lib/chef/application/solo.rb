@@ -376,7 +376,7 @@ EOH
   def windows_interval_error_message
     "Windows chef-solo interval runs are disabled in Chef 14." +
       "\nConfiguration settings:" +
-      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
       "\nPlease install chef-solo as a Windows service or scheduled task instead."
   end
 
@@ -384,6 +384,6 @@ EOH
     "Unforked chef-solo interval runs are disabled in Chef 12." +
       "\nConfiguration settings:" +
       ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
-      "\nEnable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
+      "\nEnable chef-solo interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
   end
 end

@@ -521,7 +521,7 @@ class Chef::Application::Client < Chef::Application
   def windows_interval_error_message
     "Windows chef-client interval runs are disabled in Chef 14." +
       "\nConfiguration settings:" +
-      "#{"\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]}" +
+      ("\n  interval  = #{Chef::Config[:interval]} seconds" if Chef::Config[:interval]).to_s +
       "\nPlease install chef-client as a Windows service or scheduled task instead."
   end
 
