@@ -46,6 +46,7 @@ class Chef
 
         execute "update initramfs" do
           command initramfs_command
+          default_env true
           action :nothing
         end
       end
@@ -65,6 +66,7 @@ class Chef
 
         execute "update initramfs" do
           command initramfs_command
+          default_env true
           action :nothing
         end
 
@@ -81,6 +83,7 @@ class Chef
 
         execute "update initramfs" do
           command initramfs_command
+          default_env true
           action :nothing
         end
 
