@@ -150,9 +150,11 @@ class Chef
             with_helper do
               json = build_query(action, parameters)
               Chef::Log.trace "sending '#{json}' to python helper"
+              pp json
               outpipe.syswrite json + "\n"
               output = inpipe.sysread(4096).chomp
               Chef::Log.trace "got '#{output}' from python helper"
+              pp output
               return output
             end
           end
