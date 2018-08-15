@@ -61,6 +61,7 @@ class Chef
           current_resource.package_name(new_resource.package_name)
           current_resource.version(get_current_versions)
 
+          pp current_resource
           current_resource
         end
 
