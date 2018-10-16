@@ -365,7 +365,7 @@ class Chef::Application::Client < Chef::Application
     if config[:target] || Chef::Config.target
       Chef::Config.target_mode.enabled = true
       Chef::Config.target_mode.host = config[:target] || Chef::Config.target
-      Chef::Config.node_name = Chef::Config.target_mode.host
+      Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
     end
 
     if Chef::Config[:daemonize]

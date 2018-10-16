@@ -269,11 +269,23 @@ EOH
         end
     end
 
+    # Succeeds if:
+    # - we are in target mode, and the target_mode filter is true
+    # - we are not in target mode, and the target_mode filter is not false
+    def matches_target_mode?(filters)
+      if Chef::Config.target_mode?
+        filters[:target_mode] == true
+      else
+        !filters[:target_mode] == false
+      end
+    end
+
     def filters_match?(node, filters)
       matches_black_white_list?(node, filters, :os) &&
         matches_black_white_list?(node, filters, :platform_family) &&
         matches_black_white_list?(node, filters, :platform) &&
-        matches_version_list?(node, filters, :platform_version)
+        matches_version_list?(node, filters, :platform_version) &&
+        matches_target_mode?(filters)
     end
 
     def block_matches?(node, block)
