@@ -39,6 +39,7 @@ PATH
       serverspec (~> 2.7)
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
+      train-core
       uuidtools (~> 2.1.5)
     chef (14.6.29-universal-mingw32)
       addressable
@@ -70,6 +71,7 @@ PATH
       serverspec (~> 2.7)
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
+      train-core
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
       win32-dir (~> 0.5.0)

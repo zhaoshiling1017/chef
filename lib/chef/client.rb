@@ -93,6 +93,12 @@ class Chef
     attr_reader :ohai
 
     #
+    # The train connection to a remote target.
+    #
+    # @return [Train::Plugins::Transport::BaseConnection]
+    #
+    attr_reader :train
+
     # The rest object used to communicate with the Chef server.
     #
     # @return [Chef::ServerAPI]
@@ -151,7 +157,12 @@ class Chef
       @json_attribs = json_attribs || {}
       @logger = args.delete(:logger) || Chef::Log.with_child
 
-      @ohai = Ohai::System.new(logger: logger)
+      @ohai = if Chef::Config.target_mode?
+                OpenStruct.new(data: Mash.new)
+              else
+                Ohai::System.new(logger: logger)
+              end
+      @train = nil # configured in run_train()
 
       event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
@@ -257,7 +268,13 @@ class Chef
         logger.info "Chef-client pid: #{Process.pid}"
         logger.debug("Chef-client request_id: #{request_id}")
         enforce_path_sanity
-        run_ohai
+
+        if Chef::Config.target_mode?
+          run_train
+          mock_ohai_with_train
+        else
+          run_ohai
+        end
 
         generate_guid
 
@@ -591,6 +608,36 @@ class Chef
         logger.debug("Saving the current state of node #{node_name}")
         node.save
       end
+    end
+
+    def run_train
+      require 'train'
+      protocol = Chef::Config.target_mode.protocol
+      train_config = Chef::Config.target_mode.to_hash.select { |k| Train.options(protocol).has_key?(k) }
+      train_config[:logger] = logger
+
+      # Train handles connection retries for us
+      @train = Train.create(protocol, train_config).connection
+      train.wait_until_ready
+		rescue SocketError => e # likely a dns failure
+      e.message.replace "Error connecting to #{train.uri} - #{e.message}"
+      raise e
+    rescue Train::PluginLoadError
+      logger.error("Invalid target mode protocol: #{protocol}")
+      exit(false)
+    end
+
+    def mock_ohai_with_train
+      ohai.data[:fqdn] = train.hostname
+      ohai.data[:machinename] = nil
+      ohai.data[:hostname] = nil
+      ohai.data[:platform] = train.os.name
+      ohai.data[:platform_version] = train.os.release
+      ohai.data[:ohai_time] = Time.now.to_f
+      ohai.data[:os] = train.os.family_hierarchy[1] # linux. this might be wrong/bad.
+      ohai.data[:os_version] = nil # kernel version
+
+      ohai.data[:platform_family] = train.os.family
     end
 
     #
