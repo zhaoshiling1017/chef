@@ -44,6 +44,7 @@ class Chef
 
       def run_start(version)
         puts_line "Starting Chef Client, version #{version}"
+        puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 

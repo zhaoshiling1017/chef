@@ -23,7 +23,7 @@ class Chef
   class Resource
     class Execute < Chef::Resource
       resource_name :execute
-      provides :execute
+      provides :execute, target_mode: true
 
       identity_attr :command
 

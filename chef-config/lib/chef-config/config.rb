@@ -286,10 +286,10 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ".chef")
-          target_mode? ? secondary_cache_path + "/#{target_mode.host}" : secondary_cache_path
+          target_mode? ? "#{secondary_cache_path}/#{target_mode.host}" : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
         else
-          target_mode? ? primary_cache_path + "/#{target_mode.host}" : primary_cache_path
+          target_mode? ? "#{primary_cache_path}/#{target_mode.host}" : primary_cache_path
         end
       end
     end
@@ -430,6 +430,7 @@ module ChefConfig
       config_strict_mode false # we don't want to have to add all train configuration keys here
       default :enabled, false
       default :protocol, "ssh"
+      # typical additional keys: host, user, password
     end
 
     def self.target_mode?
@@ -626,7 +627,7 @@ module ChefConfig
       if chef_zero.enabled
         nil
       elsif target_mode?
-        platform_specific_path("/etc/chef") + "/#{target_mode.host}/client.pem"
+        platform_specific_path("/etc/chef/#{target_mode.host}/client.pem")
       else
         platform_specific_path("/etc/chef/client.pem")
       end

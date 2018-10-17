@@ -21,6 +21,7 @@ require "chef/dsl/platform_introspection"
 require "chef/mixin/powershell_exec"
 require "chef/mixin/powershell_out"
 require "chef/mixin/shell_out"
+require "chef/mixin/train_or_shell"
 
 class Chef
   module DSL
@@ -47,6 +48,7 @@ class Chef
       include Chef::Mixin::PowershellExec
       include Chef::Mixin::PowershellOut
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::TrainOrShell
     end
   end
 end

@@ -307,7 +307,7 @@ class Chef::Application::Client < Chef::Application
     long: "--target TARGET",
     description: "Target the Chef Client run against a remote system or device",
     proc: lambda { |target|
-      Chef::Log.warn "using --target, this might be for testing only, you might want to use chef apply"
+      Chef::Log.warn "-- EXPERIMENTAL -- Target mode activated, resources and dsl may change without warning -- EXPERIMENTAL --"
       # Chef::Config[:config_file] = platform_specific_path("/etc/chef") + "/#{target}/client.rb" unless config[:config_file]
       target
     }

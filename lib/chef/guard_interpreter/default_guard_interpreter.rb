@@ -33,7 +33,7 @@ class Chef
       public
 
       def evaluate
-        result = shell_out(@command, default_env: false, **@command_opts)
+        result = train_or_shell(@command, default_env: false, **@command_opts)
         Chef::Log.debug "Command failed: #{result.stderr}" unless result.status.success?
         result.status.success?
       # Timeout fails command rather than chef-client run, see:
