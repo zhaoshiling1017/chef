@@ -71,13 +71,6 @@ class Chef
     #
     attr_accessor :reboot_info
 
-    # Train connection for target mode.
-    #
-    # @return [Train::Plugins::Transport::BaseConnection] The child class for
-    #   our train transport.
-    #
-    attr_accessor :train_connection
-
     #
     # Scoped state
     #
@@ -191,7 +184,7 @@ class Chef
       @reboot_info = {}
       @cookbook_compiler = nil
       @delayed_actions = []
-      @train_connection = nil
+      @transport_connection = nil
 
       initialize_child_state
     end
@@ -587,6 +580,15 @@ ERROR_MESSAGE
       reboot_info.size > 0
     end
 
+    # Remote connection for target mode using Train
+    #
+    # @return [Train::Plugins::Transport::BaseConnection] The child class for
+    #   our train transport.
+    #
+    def transport_connection
+      @transport_connection ||= Chef::Transport.build_connection(logger)
+    end
+
     #
     # Create a child RunContext.
     #
@@ -638,8 +640,7 @@ ERROR_MESSAGE
         request_reboot
         resolve_attribute
         unreachable_cookbook?
-        train_connection
-        train_connection=
+        transport_connection
       }
 
       def initialize(parent_run_context)

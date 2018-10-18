@@ -53,6 +53,7 @@ require "chef/policy_builder"
 require "chef/request_id"
 require "chef/platform/rebooter"
 require "chef/mixin/deprecation"
+require "chef/transport"
 require "ohai"
 require "rbconfig"
 require "ostruct"
@@ -92,13 +93,6 @@ class Chef
     # @return [Ohai::System]
     #
     attr_reader :ohai
-
-    #
-    # The train connection to a remote target.
-    #
-    # @return [Train::Plugins::Transport::BaseConnection]
-    #
-    attr_reader :train_connection
 
     # The rest object used to communicate with the Chef server.
     #
@@ -163,8 +157,6 @@ class Chef
               else
                 Ohai::System.new(logger: logger)
               end
-      @train_connection = nil # configured in run_train()
-
       event_handlers = configure_formatters + configure_event_loggers
       event_handlers += Array(Chef::Config[:event_handlers])
 
@@ -272,8 +264,7 @@ class Chef
         enforce_path_sanity
 
         if Chef::Config.target_mode?
-          setup_train
-          populate_ohai_data_with_train
+          get_ohai_data_remotely
         else
           run_ohai
         end
@@ -534,7 +525,6 @@ class Chef
       run_context = policy_builder.setup_run_context(specific_recipes)
       assert_cookbook_path_not_empty(run_context)
       run_status.run_context = run_context
-      run_context.train_connection = train_connection if Chef::Config.target_mode?
       run_context
     end
 
@@ -613,37 +603,26 @@ class Chef
       end
     end
 
-    def setup_train
-      require "train"
-      protocol = Chef::Config.target_mode.protocol
-      train_config = Chef::Config.target_mode.to_hash.select { |k| Train.options(protocol).key?(k) }
-      train_config[:logger] = logger
-
-      # Train handles connection retries for us
-      @train_connection = Train.create(protocol, train_config).connection
-      train_connection.wait_until_ready
-    rescue SocketError => e # likely a dns failure, not caught by train
-      e.message.replace "Error connecting to #{train_connection.uri} - #{e.message}"
-      raise e
-    rescue Train::PluginLoadError
-      logger.error("Invalid target mode protocol: #{protocol}")
-      exit(false)
-    end
-
     #
-    # Populate the minimal ohai attributes defined in #run_ohai with data train collects
+    # Populate the minimal ohai attributes defined in #run_ohai with data train collects.
     #
-    def populate_ohai_data_with_train
+    # Eventually ohai may support colleciton of data.
+    #
+    def get_ohai_data_remotely
+      train_connection = Chef::Transport.build_connection(logger)
       ohai.data[:fqdn] = train_connection.hostname
-      ohai.data[:machinename] = nil
-      ohai.data[:hostname] = nil
       ohai.data[:platform] = train_connection.os.name
       ohai.data[:platform_version] = train_connection.os.release
       ohai.data[:ohai_time] = Time.now.to_f
       ohai.data[:os] = train_connection.os.family_hierarchy[1] # linux. this might be wrong/bad.
-      ohai.data[:os_version] = nil # kernel version
+
+      # train does not collect these specifically
+      # ohai.data[:machinename] = nil
+      # ohai.data[:hostname] = nil
+      # ohai.data[:os_version] = nil # kernel version
 
       ohai.data[:platform_family] = train_connection.os.family
+      events.ohai_completed(node)
     end
 
     #
