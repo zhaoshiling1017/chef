@@ -26,7 +26,8 @@ class Chef
     def self.load_credentials(profile)
       extend ChefConfig::Mixin::Credentials
 
-      # ChefConfig::Mixin::Credentials.credentials_file_path is designed around knife
+      # ChefConfig::Mixin::Credentials.credentials_file_path is designed around knife,
+      # overriding it here.
       #
       # Credentials file preference:
       #
@@ -58,16 +59,50 @@ class Chef
         credentials_file
       end
 
+      # Tomlrb.load_file returns a hash with keys as strings
       credentials = parse_credentials_file
-      # todo raise warning if { "host" => { "domain" => { "org" => { "key" => "val"} } } } exists
+      if contains_split_fqdn?(credentials, profile)
+        Chef::Log.warn("Credentials file #{credentials_file_path} contains target '#{profile}' as a Hash, expected a string.")
+        Chef::Log.warn("Hostnames must be surrounded by single quotes, e.g. ['host.example.org']")
+      end
+
       # host names must be specified in credentials file as ['foo.example.org'] with quotes
       if !credentials.nil? && !credentials[profile].nil?
-        # Tomlrb.load_file returns a hash with keys as strings that don't match with #key?
         Mash.from_hash(credentials[profile]).symbolize_keys
       else
         nil
       end
     end
+
+    # Toml creates hashes when a key is separated by periods, e.g.
+    # [host.example.org] => { host: { example: { org: {} } } }
+    #
+    # Returns true if the above example is true
+    #
+    # A hostname has to be specified as ['host.example.org']
+    # This will be a common mistake so we should catch it
+    #
+    def self.contains_split_fqdn?(hash, fqdn)
+			n = 0
+			matches = 0
+			fqdn_split = fqdn.split('.')
+
+			# if the top level of the hash matches the first part of the fqdn, continue
+			if hash.has_key?(fqdn_split[n])
+				matches = matches + 1
+				until n == fqdn_split.length - 1
+					# if we still have fqdn elements but ran out of depth, return false
+					return false if !hash[fqdn_split[n]].is_a?(Hash)
+					if hash[fqdn_split[n]].has_key?(fqdn_split[n+1])
+						matches = matches + 1
+						return true if matches == fqdn_split.length
+					end
+					hash = hash[fqdn_split[n]]
+					n = n + 1
+				end
+			end
+			false
+		end
 
     def self.build_connection(logger = Chef::Log.with_child(subsystem: "transport"))
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
@@ -83,7 +118,7 @@ class Chef
       # Load the credentials file, and place any valid settings into the train configuration
       credentials = load_credentials(tm_config.host)
       if credentials
-        valid_settings = credentials.select { |k| Train.options(protocol).key?(k.to_sym) }
+        valid_settings = credentials.select { |k| Train.options(protocol).key?(k) }
         train_config.merge!(valid_settings)
         Chef::Log.trace("Using target mode options from credentials file: #{valid_settings.keys.join(', ')}") if valid_settings
       end
