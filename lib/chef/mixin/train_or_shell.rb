@@ -37,7 +37,7 @@ class Chef
           result = run_context.transport_connection.run_command(args)
           train_to_shellout_result(result.stdout, result.stderr, result.exit_status)
         else
-          shell_out(args, opts)
+          shell_out(*args, opts)
         end
       end
 
@@ -47,7 +47,7 @@ class Chef
           raise Mixlib::ShellOut::ShellCommandFailed, "Unexpected exit status of #{result.exit_status} running #{args}" if result.exit_status != 0
           train_to_shellout_result(result.stdout, result.stderr, result.exit_status)
         else
-          shell_out!(args, opts)
+          shell_out!(*args, opts)
         end
       end
 
@@ -56,7 +56,7 @@ class Chef
           run_context.transport_connection.run_command(args)
           train_to_shellout_result(result.stdout, result.stderr, result.exit_status)
         else
-          powershell_out(args)
+          powershell_out(*args)
         end
       end
 
@@ -66,7 +66,7 @@ class Chef
           raise Mixlib::ShellOut::ShellCommandFailed, "Unexpected exit status of #{result.exit_status} running #{args}" if result.exit_status != 0
           train_to_shellout_result(result.stdout, result.stderr, result.exit_status)
         else
-          powershell_out!(args)
+          powershell_out!(*args)
         end
       end
     end

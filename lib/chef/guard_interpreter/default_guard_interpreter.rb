@@ -17,11 +17,13 @@
 #
 
 require "chef/mixin/shell_out"
+require "chef/mixin/train_or_shell"
 
 class Chef
   class GuardInterpreter
     class DefaultGuardInterpreter
       include Chef::Mixin::ShellOut
+      include Chef::Mixin::TrainOrShell
 
       protected
 

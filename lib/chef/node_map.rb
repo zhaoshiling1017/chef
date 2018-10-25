@@ -77,7 +77,7 @@ EOH
       new_matcher[:override] = override if override
       new_matcher[:cookbook_override] = allow_cookbook_override
       new_matcher[:core_override] = __core_override__
-      new_matcher[:target_mode] = target_mode if target_mode
+      new_matcher[:target_mode] = target_mode
 
       if chef_version && Chef::VERSION !~ chef_version
         return map
@@ -277,7 +277,7 @@ EOH
       if Chef::Config.target_mode?
         filters[:target_mode] == true
       else
-        !filters[:target_mode] == false
+        !(filters[:target_mode] == false)
       end
     end
 
