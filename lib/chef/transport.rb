@@ -26,39 +26,6 @@ class Chef
     def self.load_credentials(profile)
       extend ChefConfig::Mixin::Credentials
 
-      # ChefConfig::Mixin::Credentials.credentials_file_path is designed around knife,
-      # overriding it here.
-      #
-      # Credentials file preference:
-      #
-      # 1) target_mode.credentials_file
-      # 2) /etc/chef/TARGET_MODE_HOST/credentials
-      # 3) #credentials_file_path from parent ($HOME/.chef/credentials)
-      #
-      def credentials_file_path
-        tm_config = Chef::Config.target_mode
-
-        credentials_file =
-          if tm_config.credentials_file
-            if File.exists?(tm_config.credentials_file)
-              tm_config.credentials_file
-            else
-              raise ArgumentError, "Credentials file specified for target mode does not exist: '#{tm_config.credentials_file}'"
-            end
-          elsif File.exists?(Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials"))
-            Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials")
-          else
-            super
-          end
-        if credentials_file
-          Chef::Log.debug("Loading credentials file '#{credentials_file}' for target '#{profile}'")
-        else
-          Chef::Log.debug("No credentials file found for target '#{profile}'")
-        end
-
-        credentials_file
-      end
-
       # Tomlrb.load_file returns a hash with keys as strings
       credentials = parse_credentials_file
       if contains_split_fqdn?(credentials, profile)
@@ -83,26 +50,60 @@ class Chef
     # This will be a common mistake so we should catch it
     #
     def self.contains_split_fqdn?(hash, fqdn)
-			n = 0
-			matches = 0
-			fqdn_split = fqdn.split('.')
+      n = 0
+      matches = 0
+      fqdn_split = fqdn.split(".")
 
-			# if the top level of the hash matches the first part of the fqdn, continue
-			if hash.has_key?(fqdn_split[n])
-				matches = matches + 1
-				until n == fqdn_split.length - 1
-					# if we still have fqdn elements but ran out of depth, return false
-					return false if !hash[fqdn_split[n]].is_a?(Hash)
-					if hash[fqdn_split[n]].has_key?(fqdn_split[n+1])
-						matches = matches + 1
-						return true if matches == fqdn_split.length
-					end
-					hash = hash[fqdn_split[n]]
-					n = n + 1
-				end
-			end
-			false
-		end
+      # if the top level of the hash matches the first part of the fqdn, continue
+      if hash.key?(fqdn_split[n])
+        matches += 1
+        until n == fqdn_split.length - 1
+          # if we still have fqdn elements but ran out of depth, return false
+          return false if !hash[fqdn_split[n]].is_a?(Hash)
+          if hash[fqdn_split[n]].key?(fqdn_split[n + 1])
+            matches += 1
+            return true if matches == fqdn_split.length
+          end
+          hash = hash[fqdn_split[n]]
+          n += 1
+        end
+      end
+      false
+    end
+
+    # ChefConfig::Mixin::Credentials.credentials_file_path is designed around knife,
+    # overriding it here.
+    #
+    # Credentials file preference:
+    #
+    # 1) target_mode.credentials_file
+    # 2) /etc/chef/TARGET_MODE_HOST/credentials
+    # 3) #credentials_file_path from parent ($HOME/.chef/credentials)
+    #
+    def self.credentials_file_path
+      tm_config = Chef::Config.target_mode
+      profile = tm_config.host
+
+      credentials_file =
+        if tm_config.credentials_file
+          if File.exists?(tm_config.credentials_file)
+            tm_config.credentials_file
+          else
+            raise ArgumentError, "Credentials file specified for target mode does not exist: '#{tm_config.credentials_file}'"
+          end
+        elsif File.exists?(Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials"))
+          Chef::Config.platform_specific_path("/etc/chef/#{profile}/credentials")
+        else
+          super
+        end
+      if credentials_file
+        Chef::Log.debug("Loading credentials file '#{credentials_file}' for target '#{profile}'")
+      else
+        Chef::Log.debug("No credentials file found for target '#{profile}'")
+      end
+
+      credentials_file
+    end
 
     def self.build_connection(logger = Chef::Log.with_child(subsystem: "transport"))
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
