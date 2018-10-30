@@ -43,7 +43,7 @@ class Chef
 
       def train_or_shell!(*args, **opts)
         if Chef::Config.target_mode?
-          result = run_context.transport_connection.run_command(args)
+          result = run_context.transport_connection.run_command(*args)
           raise Mixlib::ShellOut::ShellCommandFailed, "Unexpected exit status of #{result.exit_status} running #{args}" if result.exit_status != 0
           train_to_shellout_result(result.stdout, result.stderr, result.exit_status)
         else

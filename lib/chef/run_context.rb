@@ -586,7 +586,12 @@ ERROR_MESSAGE
     #   our train transport.
     #
     def transport_connection
-      @transport_connection ||= Chef::Transport.build_connection(logger)
+      if @transport.nil?
+        @transport = Chef::Transport.build_transport(logger)
+        @transport.connection
+      else
+        @transport.connection
+      end
     end
 
     #

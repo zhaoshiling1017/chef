@@ -609,19 +609,24 @@ class Chef
     # Eventually ohai may support colleciton of data.
     #
     def get_ohai_data_remotely
-      train_connection = Chef::Transport.build_connection(logger)
-      ohai.data[:fqdn] = train_connection.hostname
-      ohai.data[:platform] = train_connection.os.name
-      ohai.data[:platform_version] = train_connection.os.release
-      ohai.data[:ohai_time] = Time.now.to_f
-      ohai.data[:os] = train_connection.os.family_hierarchy[1] # linux. this might be wrong/bad.
-
+      train_connection = Chef::Transport.build_transport(logger).connection
+      ohai.data[:fqdn] = if train_connection.respond_to?(:hostname)
+                           train_connection.hostname
+                         else
+                           Chef::Config[:target_mode][:host]
+                         end
+      if train_connection.respond_to?(:os)
+        ohai.data[:platform] = train_connection.os.name
+        ohai.data[:platform_version] = train_connection.os.release
+        ohai.data[:os] = train_connection.os.family_hierarchy[1]
+        ohai.data[:platform_family] = train_connection.os.family
+      end
       # train does not collect these specifically
       # ohai.data[:machinename] = nil
       # ohai.data[:hostname] = nil
       # ohai.data[:os_version] = nil # kernel version
 
-      ohai.data[:platform_family] = train_connection.os.family
+      ohai.data[:ohai_time] = Time.now.to_f
       events.ohai_completed(node)
     end
 

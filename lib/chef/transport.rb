@@ -105,7 +105,7 @@ class Chef
       credentials_file
     end
 
-    def self.build_connection(logger = Chef::Log.with_child(subsystem: "transport"))
+    def self.build_transport(logger = Chef::Log.with_child(subsystem: "transport"))
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
       #
       train_config = Hash.new
@@ -120,6 +120,7 @@ class Chef
       credentials = load_credentials(tm_config.host)
       if credentials
         valid_settings = credentials.select { |k| Train.options(protocol).key?(k) }
+        valid_settings[:enable_password] = credentials[:enable_password] if credentials.key?(:enable_password)
         train_config.merge!(valid_settings)
         Chef::Log.trace("Using target mode options from credentials file: #{valid_settings.keys.join(', ')}") if valid_settings
       end
@@ -127,9 +128,7 @@ class Chef
       train_config[:logger] = logger
 
       # Train handles connection retries for us
-      train_connection = Train.create(protocol, train_config).connection
-      train_connection.wait_until_ready
-      train_connection
+      Train.create(protocol, train_config)
     rescue SocketError => e # likely a dns failure, not caught by train
       e.message.replace "Error connecting to #{train_connection.uri} - #{e.message}"
       raise e
