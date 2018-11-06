@@ -58,7 +58,7 @@ class Chef
         else
           opts = { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   run_list: ["run_list"], platform: ["platform"],
                    platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
         end
 
