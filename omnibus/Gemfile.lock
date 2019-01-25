@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: ce1e03de4c9970da53b4c63176b17af518426968
-  branch: master
+  revision: 708cd548439b491ce7e558040ca6a6e4b867e370
+  branch: more_ruby26
   specs:
     omnibus-software (4.0.0)
       chef-sugar (>= 3.4.0)
@@ -32,7 +32,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.134.0)
+    aws-partitions (1.135.0)
     aws-sdk-core (3.46.0)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
