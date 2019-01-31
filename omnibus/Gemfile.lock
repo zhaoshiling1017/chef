@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 708cd548439b491ce7e558040ca6a6e4b867e370
+  revision: a18e4abfed4451cf3f2ea1704a696a30041352ff
   branch: more_ruby26
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     awesome_print (1.8.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.135.0)
+    aws-partitions (1.136.0)
     aws-sdk-core (3.46.0)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
@@ -63,10 +63,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (10.0.2)
-    chef (14.9.13)
+    chef (14.10.9)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.9.13)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -93,10 +93,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.9.13-universal-mingw32)
+    chef (14.10.9-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.9.13)
+      chef-config (= 14.10.9)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -136,7 +136,7 @@ GEM
       win32-taskscheduler (~> 2.0)
       windows-api (~> 0.4.4)
       wmi-lite (~> 1.0)
-    chef-config (14.9.13)
+    chef-config (14.10.9)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 3.0)
@@ -318,7 +318,7 @@ GEM
     tomlrb (1.2.8)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.2.2)
+    win32-certstore (0.2.3)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
