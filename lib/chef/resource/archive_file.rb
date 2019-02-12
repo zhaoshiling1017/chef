@@ -61,8 +61,6 @@ class Chef
       action :extract do
         description "Extract and archive file."
 
-        require "fileutils"
-
         unless ::File.exist?(new_resource.path)
           raise Errno::ENOENT, "No archive found at #{new_resource.path}!"
         end
