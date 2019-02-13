@@ -22,6 +22,10 @@ class Chef
         subscribers << subscriber
       end
 
+      def unregister(subscriber)
+        subscribers.reject! { |x| x == subscriber }
+      end
+
       def enqueue(method_name, *args)
         event_list << [ method_name, *args ]
         process_events_until_done unless @in_call

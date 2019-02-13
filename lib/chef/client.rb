@@ -265,7 +265,6 @@ class Chef
         run_ohai
 
         register unless Chef::Config[:solo_legacy_mode]
-        register_reporters
 
         load_node
 
@@ -676,6 +675,7 @@ class Chef
                                                             signing_key_filename: config[:client_key])
       # force initialization of the rest_clean API object
       rest_clean(client_name, config)
+      register_reporters
     rescue Exception => e
       # TODO this should probably only ever fire if we *started* registration.
       # Move it to the block above.

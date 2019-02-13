@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 #
-# Copyright:: Copyright 2015-2018, Chef Software Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,9 +43,9 @@ describe Chef::EventDispatch::Dispatcher do
 
     it "forwards events to the subscribed event sink" do
       # the events all have different arity and such so we just hit a few different events:
-
-      expect(event_sink).to receive(:run_start).with("12.4.0")
-      dispatcher.run_start("12.4.0")
+      run_status = Chef::RunStatus.new({}, {})
+      expect(event_sink).to receive(:run_start).with("12.4.0", run_status)
+      dispatcher.run_start("12.4.0", run_status)
 
       cookbook_version = double("cookbook_version")
       expect(event_sink).to receive(:synchronized_cookbook).with("apache2", cookbook_version)

@@ -66,6 +66,7 @@ class Chef
       end
 
       def run_start(chef_version, run_status)
+        events.unregister(self) unless should_be_enabled?
         @run_status = run_status
       end
 
@@ -75,7 +76,7 @@ class Chef
 
       def action_collection_registration(action_collection)
         @action_collection = action_collection
-        action_collection.register(self) if should_be_enabled?
+        action_collection.register(self)
       end
 
       # Upon receipt, we will send our run start message to the
@@ -167,7 +168,7 @@ class Chef
         Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
         Errno::EHOSTDOWN => e
         # Do not disable data collector reporter if additional output_locations have been specified
-        events.deregister(self) unless Chef::Config[:data_collector][:output_locations]
+        events.unregister(self) unless Chef::Config[:data_collector][:output_locations]
 
         code = if e.respond_to?(:response) && e.response.code
                  e.response.code.to_s

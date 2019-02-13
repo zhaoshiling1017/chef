@@ -26,7 +26,7 @@ class Chef
 
           begin
             uri = URI(Chef::Config[:data_collector][:server_url])
-          rescue URI::InvalidURIError
+          rescue
             raise Chef::Exceptions::ConfigurationError, "Chef::Config[:data_collector][:server_url] (#{Chef::Config[:data_collector][:server_url]}) is not a valid URI."
           end
 
@@ -67,18 +67,17 @@ class Chef
         rescue Errno::EACCES
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannnot be written to by Chef."
-        rescue # FIXME: generic error message
-          raise
+        rescue Exception => e
+          raise Chef::Exceptions::ConfigurationError,
+            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is invalid: #{e.message}."
         end
 
         # validate an output_location url
         def validate_url!(url)
           URI(url)
-        rescue URI::InvalidURIError
+        rescue
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:urls] contains the url #{url} which is not valid."
-        rescue # FIXME: generic error message
-          raise
         end
 
       end
