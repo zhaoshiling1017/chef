@@ -70,6 +70,8 @@ describe Chef::DataCollector do
 
   let(:expected_run_list) { run_list.for_json }
 
+  let(:node_uuid) { "779196c6-f94f-4501-9dae-af8081ab4d3a" }
+
   before do
     allow(Time).to receive(:now).and_return(start_time, end_time)
     allow(Chef::HTTP::SimpleJSON).to receive(:new).and_return(rest_client)
@@ -88,11 +90,12 @@ describe Chef::DataCollector do
   end
 
   def expect_start_message
+    expect(Chef::DataCollector::NodeUUID).to receive(:node_uuid).at_least(:once).and_return(node_uuid)
     expect(rest_client).to receive(:post).with(
       nil,
       {
         "chef_server_fqdn" => "localhost",
-        "entity_uuid" => "779196c6-f94f-4501-9dae-af8081ab4d3a", # FIXME
+        "entity_uuid" => node_uuid,
         "id" => nil,
         "message_type" => "run_start",
         "message_version" => "1.0.0",
@@ -159,7 +162,7 @@ describe Chef::DataCollector do
     end
 
     it "has a entity_uuid" do
-      expect_converge_message("entity_uuid" => "779196c6-f94f-4501-9dae-af8081ab4d3a") # FIXME
+      expect_converge_message("entity_uuid" => node_uuid)
       send_run_failed_or_completed_event
     end
 
